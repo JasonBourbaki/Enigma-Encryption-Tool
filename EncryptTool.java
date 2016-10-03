@@ -52,8 +52,8 @@ public class EncryptTool extends Program{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		String input = inputField.getText();
-		String key = keyField.getText();
+		String input = inputField.getText().toUpperCase();
+		String key = keyField.getText().toUpperCase();
 		if(!input.isEmpty()){
 
 			if(e.getActionCommand().equals("Encode with Caesar Cipher")){
@@ -64,7 +64,7 @@ public class EncryptTool extends Program{
 			
 			//Run vigenere algorithm when the button for it is pressed
 			if(e.getActionCommand().equals("Encode with Vigenere Cipher")){
-				String encrypted = viginereAlgorithm(input, key);
+				String encrypted = vigenereAlgorithm(input, key);
 				result.setText(encrypted);
 			}
 		}
@@ -90,8 +90,37 @@ public class EncryptTool extends Program{
 		return result;
 	}
 	
-	private String viginereAlgorithm (String str, String key){
-		return "";
+	//Algorithm for Vigenere cipher.
+	private String vigenereAlgorithm(String str, String key){
+		int repeats = str.length() / key.length();
+		String tail = key.substring(0, str.length() - repeats*key.length());
+		String keyChain = generateKeyChain(key, repeats, tail);
+		String result = "";
+		for(int i = 0; i < str.length(); i++){
+			int n = str.charAt(i);
+			int k = keyChain.charAt(i) - 65;
+			if(n >= 65 && n <= 90){ //check if n is a letter
+				n += k;
+				//deal with cases when n + key is out of the range of letters in ASCII
+				if(n < 65){
+					n += 26;
+				}else if(n > 90){
+					n -= 26;
+				}
+			}
+			result += (char)n;
+		}
+		return result;
+	}
+	
+	//Generate a key chain based on the key user entered
+	private String generateKeyChain(String key, int repeats, String tail){
+		String keyChain = "";
+		for(int i = 0; i < repeats; i++){
+			keyChain += key;
+		}
+		keyChain += tail;
+		return keyChain;
 	}
 	
 	private static final Font TITLE_FONT = new Font ("Dialog", 12, 40);
